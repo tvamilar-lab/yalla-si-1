@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Yalla Si Player</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;800&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --neon:#3fdcff;
+  --dark:#050b12;
+}
+
+html,body{
+  margin:0;
+  width:100%;
+  height:100%;
+  background:var(--dark);
+  font-family:'Orbitron', sans-serif;
+  overflow:hidden;
+}
+
+/* ===== AD ===== */
+#ad-overlay{
+  position:fixed;
+  inset:0;
+  background:rgba(5,11,18,.9);
+  backdrop-filter:blur(10px);
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  z-index:50;
+}
+#ad-box{
+  width:420px;
+  height:300px;
+  border-radius:26px;
+  background:rgba(5,11,18,.8);
+  backdrop-filter:blur(12px);
+  border:2px solid var(--neon);
+  box-shadow:0 0 70px rgba(63,220,255,.7);
+  padding:30px;
+  text-align:center;
+  position:relative;
+}
+#ad-box h2{
+  color:var(--neon);
+  text-shadow:0 0 15px var(--neon);
+}
+#ad-close{
+  position:absolute;
+  top:18px;
+  right:22px;
+  font-size:28px;
+  color:var(--neon);
+  cursor:pointer;
+}
+
+/* ===== PLAYER ===== */
+#player-frame{
+  position:absolute;
+  inset:20px;
+  border-radius:30px;
+  border:1px solid var(--neon);
+  box-shadow:0 0 90px rgba(63,220,255,.35);
+  overflow:hidden;
+  background:black;
+}
+
+/* ===== LOGO ===== */
+#logo{
+  position:absolute;
+  top:45px;
+  right:45px;
+  padding:18px 65px;
+  border-radius:22px;
+  background:rgba(5,11,18,.55);
+  backdrop-filter:blur(14px);
+  border:1px solid rgba(63,220,255,.6);
+  color:var(--neon);
+  font-size:32px;
+  font-weight:800;
+  letter-spacing:4px;
+  box-shadow:0 0 45px rgba(63,220,255,.6);
+  text-shadow:0 0 14px var(--neon);
+  z-index:20;
+}
+
+/* ===== VIDEO ===== */
+video{
+  width:100%;
+  height:100%;
+  object-fit:contain;
+  background:black;
+}
+
+/* ===== START BUTTON ===== */
+#start-btn{
+  position:absolute;
+  inset:0;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  background:rgba(5,11,18,.35);
+  backdrop-filter:blur(6px);
+  z-index:15;
+  cursor:pointer;
+}
+#start-btn span{
+  width:120px;
+  height:120px;
+  border-radius:50%;
+  background:rgba(5,11,18,.6);
+  backdrop-filter:blur(12px);
+  border:2px solid var(--neon);
+  color:var(--neon);
+  font-size:52px;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  box-shadow:0 0 60px rgba(63,220,255,.9);
+}
+
+/* ===== CONTROLS ===== */
+#controls{
+  position:absolute;
+  bottom:35px;
+  left:50%;
+  transform:translateX(-50%);
+  width:75%;
+  display:flex;
+  align-items:center;
+  gap:18px;
+  padding:18px 26px;
+  background:rgba(5,11,18,.7);
+  backdrop-filter:blur(6px);
+  border-radius:22px;
+  border:1px solid var(--neon);
+  box-shadow:0 0 35px rgba(63,220,255,.8);
+  z-index:20;
+}
+.ctrl-btn{
+  background:var(--dark);
+  border:1px solid var(--neon);
+  color:var(--neon);
+  font-size:22px;
+  padding:14px 20px;
+  border-radius:16px;
+  cursor:pointer;
+}
+#progress{
+  flex:1;
+  height:8px;
+  appearance:none;
+  background:#0b1c2c;
+  border-radius:10px;
+}
+#progress::-webkit-slider-thumb{
+  appearance:none;
+  width:18px;
+  height:18px;
+  background:var(--neon);
+  border-radius:50%;
+}
+#time{
+  color:#9eefff;
+  font-size:14px;
+  min-width:80px;
+}
+
+/* ===== BUFFERING ===== */
+#buffering{
+  position:absolute;
+  inset:0;
+  display:none;
+  justify-content:center;
+  align-items:center;
+  background:rgba(5,11,18,.45);
+  backdrop-filter:blur(10px);
+  z-index:18;
+}
+.loader{
+  width:90px;
+  height:90px;
+  border-radius:50%;
+  border:6px solid rgba(63,220,255,.2);
+  border-top:6px solid var(--neon);
+  animation:spin 1s linear infinite;
+  box-shadow:0 0 40px rgba(63,220,255,.9);
+}
+@keyframes spin{
+  to{transform:rotate(360deg);}
+}
+</style>
+</head>
+
+<body>
+
+<!-- AD -->
+<div id="ad-overlay">
+  <div id="ad-box">
+    <div id="ad-close">✕</div>
+    <h2>إعلانك هنا</h2>
+    <div style="color:#9eefff;font-size:15px"><script src="https://pl28503377.effectivegatecpm.com/c7/d8/2f/c7d82f7d124a1015faa3bcf6a90fd76b.js"></script></div>
+  </div>
+</div>
+
+<div id="player-frame">
+
+  <div id="logo">Yalla Si</div>
+
+  <video id="video" playsinline></video>
+
+  <div id="start-btn">
+    <span>▶</span>
+  </div>
+
+  <div id="buffering">
+    <div class="loader"></div>
+  </div>
+
+  <div id="controls">
+    <button class="ctrl-btn" id="play">▶</button>
+    <input type="range" id="progress" value="0">
+    <span id="time">00:00</span>
+    <button class="ctrl-btn" id="mute">🔊</button>
+    <button class="ctrl-btn" id="full">⛶</button>
+  </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+<script>
+const streamURL="http://117.55.202.151:8080/live/koralive1.m3u8";
+
+const video=document.getElementById("video");
+const startBtn=document.getElementById("start-btn");
+const playBtn=document.getElementById("play");
+const muteBtn=document.getElementById("mute");
+const fullBtn=document.getElementById("full");
+const progress=document.getElementById("progress");
+const timeEl=document.getElementById("time");
+const ad=document.getElementById("ad-overlay");
+const adClose=document.getElementById("ad-close");
+const buffering=document.getElementById("buffering");
+
+let hls;
+
+function init(){
+  if(Hls.isSupported()){
+    hls=new Hls();
+    hls.loadSource(streamURL);
+    hls.attachMedia(video);
+  }else{
+    video.src=streamURL;
+  }
+}
+
+adClose.onclick=()=>{
+  ad.style.display="none";
+  init();
+};
+
+startBtn.onclick=()=>{
+  video.play();
+  startBtn.style.display="none";
+  playBtn.textContent="⏸";
+};
+
+playBtn.onclick=()=>{
+  if(video.paused){
+    video.play();
+    playBtn.textContent="⏸";
+  }else{
+    video.pause();
+    playBtn.textContent="▶";
+  }
+};
+
+muteBtn.onclick=()=>{
+  video.muted=!video.muted;
+  muteBtn.textContent=video.muted?"🔇":"🔊";
+};
+
+video.ontimeupdate=()=>{
+  if(video.duration){
+    progress.value=(video.currentTime/video.duration)*100;
+    timeEl.textContent=format(video.currentTime);
+  }
+};
+
+progress.oninput=()=>{
+  if(video.duration){
+    video.currentTime=(progress.value/100)*video.duration;
+  }
+};
+
+fullBtn.onclick=()=>{
+  if(document.fullscreenElement){
+    document.exitFullscreen();
+  }else{
+    document.getElementById("player-frame").requestFullscreen();
+  }
+};
+
+video.addEventListener("waiting",()=>{
+  buffering.style.display="flex";
+});
+video.addEventListener("playing",()=>{
+  buffering.style.display="none";
+});
+video.addEventListener("canplay",()=>{
+  buffering.style.display="none";
+});
+
+function format(sec){
+  const m=Math.floor(sec/60).toString().padStart(2,"0");
+  const s=Math.floor(sec%60).toString().padStart(2,"0");
+  return m+":"+s;
+}
+</script>
+
+</body>
+</html>
